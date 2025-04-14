@@ -25,32 +25,18 @@
     .car {
       width: 50px;
       height: 100px;
-      background: none;
       position: absolute;
       bottom: 10px;
       left: 175px;
       border-radius: 10px;
     }
 
-    .car img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
     .enemy {
       width: 50px;
       height: 100px;
-      background: none;
       position: absolute;
       top: -120px;
       border-radius: 10px;
-    }
-
-    .enemy img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
     }
 
     .road-line {
@@ -109,7 +95,18 @@
       <button id="restartBtn">Restart</button>
     </div>
     <div class="car" id="player">
-      <img src="Asset/car.jpg" alt="Player Car">
+      <!-- SVG for Player Car with window and tyres on the sides -->
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 100" width="50" height="100">
+        <!-- Car body -->
+        <rect x="0" y="0" width="50" height="70" rx="10" fill="red"/>
+        <!-- Car window -->
+        <rect x="10" y="10" width="30" height="20" rx="5" fill="lightblue"/>
+        <!-- Car tyres (on sides) -->
+        <rect x="0" y="15" width="6" height="20" rx="3" fill="black"/>
+        <rect x="0" y="45" width="6" height="20" rx="3" fill="black"/>
+        <rect x="44" y="15" width="6" height="20" rx="3" fill="black"/>
+        <rect x="44" y="45" width="6" height="20" rx="3" fill="black"/>
+      </svg>
     </div>
   </div>
 
@@ -148,10 +145,68 @@
       enemy.style.left = Math.floor(Math.random() * 350) + "px";
       enemy.style.top = "-120px";
 
-      const enemyImg = document.createElement("img");
-      enemyImg.src = "Asset/enemy.jpg";
-      enemyImg.alt = "Enemy Car";
-      enemy.appendChild(enemyImg);
+      // SVG for Enemy Car with tyres on the sides
+      const enemySvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      enemySvg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+      enemySvg.setAttribute("viewBox", "0 0 50 100");
+      enemySvg.setAttribute("width", "50");
+      enemySvg.setAttribute("height", "100");
+
+      const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      rect.setAttribute("x", "0");
+      rect.setAttribute("y", "0");
+      rect.setAttribute("width", "50");
+      rect.setAttribute("height", "70");
+      rect.setAttribute("rx", "10");
+      rect.setAttribute("fill", "yellow");
+
+      const windowRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      windowRect.setAttribute("x", "10");
+      windowRect.setAttribute("y", "10");
+      windowRect.setAttribute("width", "30");
+      windowRect.setAttribute("height", "20");
+      windowRect.setAttribute("rx", "5");
+      windowRect.setAttribute("fill", "lightblue");
+
+      const wheel1 = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      wheel1.setAttribute("x", "0");
+      wheel1.setAttribute("y", "15");
+      wheel1.setAttribute("width", "6");
+      wheel1.setAttribute("height", "20");
+      wheel1.setAttribute("rx", "3");
+      wheel1.setAttribute("fill", "black");
+
+      const wheel2 = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      wheel2.setAttribute("x", "0");
+      wheel2.setAttribute("y", "45");
+      wheel2.setAttribute("width", "6");
+      wheel2.setAttribute("height", "20");
+      wheel2.setAttribute("rx", "3");
+      wheel2.setAttribute("fill", "black");
+
+      const wheel3 = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      wheel3.setAttribute("x", "44");
+      wheel3.setAttribute("y", "15");
+      wheel3.setAttribute("width", "6");
+      wheel3.setAttribute("height", "20");
+      wheel3.setAttribute("rx", "3");
+      wheel3.setAttribute("fill", "black");
+
+      const wheel4 = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      wheel4.setAttribute("x", "44");
+      wheel4.setAttribute("y", "45");
+      wheel4.setAttribute("width", "6");
+      wheel4.setAttribute("height", "20");
+      wheel4.setAttribute("rx", "3");
+      wheel4.setAttribute("fill", "black");
+
+      enemySvg.appendChild(rect);
+      enemySvg.appendChild(windowRect);
+      enemySvg.appendChild(wheel1);
+      enemySvg.appendChild(wheel2);
+      enemySvg.appendChild(wheel3);
+      enemySvg.appendChild(wheel4);
+      enemy.appendChild(enemySvg);
 
       gameArea.appendChild(enemy);
       enemies.push(enemy);
