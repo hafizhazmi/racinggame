@@ -14,8 +14,9 @@
 
     #gameArea {
       position: relative;
-      width: 400px;
-      height: 600px;
+      width: 100%;
+      height: 80vh;
+      max-width: 400px;
       margin: 20px auto;
       background: #444;
       overflow: hidden;
@@ -27,7 +28,8 @@
       height: 100px;
       position: absolute;
       bottom: 10px;
-      left: 175px;
+      left: 50%;
+      transform: translateX(-50%);
       border-radius: 10px;
     }
 
@@ -36,6 +38,8 @@
       height: 100px;
       position: absolute;
       top: -120px;
+      left: 50%;
+      transform: translateX(-50%);
       border-radius: 10px;
     }
 
@@ -85,6 +89,26 @@
     #restartBtn:hover {
       background-color: #0056b3;
     }
+
+    /* Mobile touch buttons */
+    .touch-button {
+      position: fixed;
+      bottom: 20px;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: white;
+      padding: 15px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 2rem;
+    }
+
+    .left-button {
+      left: 20px;
+    }
+
+    .right-button {
+      right: 20px;
+    }
   </style>
 </head>
 <body>
@@ -120,6 +144,10 @@
     <source src="Asset/game-over-arcade-6435.mp3" type="audio/mpeg">
     Your browser does not support the audio element.
   </audio>
+
+  <!-- Mobile touch controls -->
+  <div class="touch-button left-button" id="leftButton">&#8592;</div>
+  <div class="touch-button right-button" id="rightButton">&#8594;</div>
 
   <script>
     const gameArea = document.getElementById("gameArea");
@@ -318,6 +346,25 @@
     });
 
     restartBtn.addEventListener("click", restartGame);
+
+    // Mobile touch controls
+    document.getElementById("leftButton").addEventListener("touchstart", () => {
+      keys.ArrowLeft = true;
+      if (!gameStarted) startGame();
+    });
+
+    document.getElementById("rightButton").addEventListener("touchstart", () => {
+      keys.ArrowRight = true;
+      if (!gameStarted) startGame();
+    });
+
+    document.getElementById("leftButton").addEventListener("touchend", () => {
+      keys.ArrowLeft = false;
+    });
+
+    document.getElementById("rightButton").addEventListener("touchend", () => {
+      keys.ArrowRight = false;
+    });
   </script>
 </body>
 </html>
