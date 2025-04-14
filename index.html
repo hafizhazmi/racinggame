@@ -25,20 +25,32 @@
     .car {
       width: 50px;
       height: 100px;
-      background: red;
+      background: none;
       position: absolute;
       bottom: 10px;
       left: 175px;
       border-radius: 10px;
     }
 
+    .car img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
     .enemy {
       width: 50px;
       height: 100px;
-      background: yellow;
+      background: none;
       position: absolute;
       top: -120px;
       border-radius: 10px;
+    }
+
+    .enemy img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
 
     .road-line {
@@ -96,7 +108,9 @@
       Game Over
       <button id="restartBtn">Restart</button>
     </div>
-    <div class="car" id="player"></div>
+    <div class="car" id="player">
+      <img src="Asset/car.jpg" alt="Player Car">
+    </div>
   </div>
 
   <!-- 🎵 Racing engine sound -->
@@ -117,7 +131,7 @@
     const gameOverScreen = document.getElementById("gameOver");
     const restartBtn = document.getElementById("restartBtn");
     const engineSound = document.getElementById("engineSound");
-  
+
     let keys = { ArrowLeft: false, ArrowRight: false };
     let playerX = 175;
     let gameSpeed = 5;
@@ -126,17 +140,23 @@
     let isGameOver = false;
     let enemyInterval;
     let gameStarted = false;
-  
+
     function createEnemy() {
       if (isGameOver) return;
       const enemy = document.createElement("div");
       enemy.classList.add("enemy");
       enemy.style.left = Math.floor(Math.random() * 350) + "px";
       enemy.style.top = "-120px";
+
+      const enemyImg = document.createElement("img");
+      enemyImg.src = "Asset/enemy.jpg";
+      enemyImg.alt = "Enemy Car";
+      enemy.appendChild(enemyImg);
+
       gameArea.appendChild(enemy);
       enemies.push(enemy);
     }
-  
+
     function createRoadLines() {
       for (let i = 0; i < 6; i++) {
         const line = document.createElement("div");
@@ -145,7 +165,7 @@
         gameArea.appendChild(line);
       }
     }
-  
+
     function moveRoadLines() {
       const lines = document.querySelectorAll(".road-line");
       lines.forEach(line => {
@@ -155,7 +175,7 @@
         line.style.top = top + "px";
       });
     }
-  
+
     function moveEnemies() {
       enemies.forEach((enemy, index) => {
         let top = parseInt(enemy.style.top);
@@ -167,13 +187,13 @@
         } else {
           enemy.style.top = top + "px";
         }
-  
+
         if (isCollide(enemy, player)) {
           endGame();
         }
       });
     }
-  
+
     function isCollide(a, b) {
       const aRect = a.getBoundingClientRect();
       const bRect = b.getBoundingClientRect();
@@ -184,7 +204,7 @@
         aRect.left > bRect.right
       );
     }
-  
+
     function endGame() {
       isGameOver = true;
       clearInterval(enemyInterval);
@@ -196,11 +216,11 @@
       crashSound.currentTime = 0;
       crashSound.play().catch(err => console.log("Crash sound play blocked:", err));
     }
-  
+
     function restartGame() {
       window.location.reload();
     }
-  
+
     function startGame() {
       if (gameStarted) return;
       gameStarted = true;
@@ -209,40 +229,40 @@
       engineSound.play().catch(err => console.log("Sound play blocked:", err));
       requestAnimationFrame(gameLoop);
     }
-  
+
     function gameLoop() {
       if (isGameOver) return;
-  
+
       moveRoadLines();
       moveEnemies();
-  
+
       if (keys.ArrowLeft && playerX > 0) {
         playerX -= 5;
       }
       if (keys.ArrowRight && playerX < 350) {
         playerX += 5;
       }
-  
+
       player.style.left = playerX + "px";
       scoreEl.textContent = "Score: " + score;
-  
+
       requestAnimationFrame(gameLoop);
     }
-  
+
     document.addEventListener("keydown", e => {
       if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
         keys[e.key] = true;
-        if (!gameStarted) startGame(); // Start only after key press
+        if (!gameStarted) startGame();
       }
     });
-  
+
     document.addEventListener("keyup", e => {
       if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
         keys[e.key] = false;
       }
     });
-  
+
     restartBtn.addEventListener("click", restartGame);
-  </script>  
+  </script>
 </body>
 </html>
