@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Racing Game</title>
+  <style>
+    body {
+      margin: 0;
+      background: #222;
+      overflow: hidden;
+      font-family: sans-serif;
+    }
+
+    #gameArea {
+      position: relative;
+      width: 400px;
+      height: 600px;
+      margin: 20px auto;
+      background: #444;
+      overflow: hidden;
+      border: 5px solid #fff;
+    }
+
+    .car {
+      width: 50px;
+      height: 100px;
+      background: red;
+      position: absolute;
+      bottom: 10px;
+      left: 175px;
+      border-radius: 10px;
+    }
+
+    .enemy {
+      width: 50px;
+      height: 100px;
+      background: yellow;
+      position: absolute;
+      top: -120px;
+      border-radius: 10px;
+    }
+
+    .road-line {
+      width: 10px;
+      height: 60px;
+      background: white;
+      position: absolute;
+      left: 195px;
+    }
+
+    #score {
+      color: white;
+      text-align: center;
+      font-size: 1.2rem;
+      margin-top: 10px;
+    }
+
+    #gameOver {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: bold;
+      z-index: 10;
+      display: none;
+    }
+
+    #restartBtn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    #restartBtn:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div id="score">Score: 0</div>
+  <div id="gameArea">
+    <div id="gameOver">
+      Game Over
+      <button id="restartBtn">Restart</button>
+    </div>
+    <div class="car" id="player"></div>
+  </div>
+
+  <!-- 🎵 Racing engine sound -->
+  <audio id="engineSound" loop>
+    <source src="Asset/car-engine-revving-94831.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
+  <script>
+    const gameArea = document.getElementById("gameArea");
+    const player = document.getElementById("player");
+    const scoreEl = document.getElementById("score");
+    const gameOverScreen = document.getElementById("gameOver");
+    const restartBtn = document.getElementById("restartBtn");
+    const engineSound = document.getElementById("engineSound");
+  
+    let keys = { ArrowLeft: false, ArrowRight: false };
+    let playerX = 175;
+    let gameSpeed = 5;
+    let score = 0;
+    let enemies = [];
+    let isGameOver = false;
+    let enemyInterval;
+    let gameStarted = false;
+  
+    function createEnemy() {
+      if (isGameOver) return;
+      const enemy = document.createElement("div");
+      enemy.classList.add("enemy");
+      enemy.style.left = Math.floor(Math.random() * 350) + "px";
+      enemy.style.top = "-120px";
+      gameArea.appendChild(enemy);
+      enemies.push(enemy);
+    }
+  
+    function createRoadLines() {
+      for (let i = 0; i < 6; i++) {
+        const line = document.createElement("div");
+        line.classList.add("road-line");
+        line.style.top = `${i * 100}px`;
+        gameArea.appendChild(line);
+      }
+    }
+  
+    function moveRoadLines() {
+      const lines = document.querySelectorAll(".road-line");
+      lines.forEach(line => {
+        let top = parseInt(line.style.top);
+        top += gameSpeed;
+        if (top > 600) top = -60;
+        line.style.top = top + "px";
+      });
+    }
+  
+    function moveEnemies() {
+      enemies.forEach((enemy, index) => {
+        let top = parseInt(enemy.style.top);
+        top += gameSpeed;
+        if (top > 600) {
+          enemy.remove();
+          enemies.splice(index, 1);
+          score++;
+        } else {
+          enemy.style.top = top + "px";
+        }
+  
+        if (isCollide(enemy, player)) {
+          endGame();
+        }
+      });
+    }
+  
+    function isCollide(a, b) {
+      const aRect = a.getBoundingClientRect();
+      const bRect = b.getBoundingClientRect();
+      return !(
+        aRect.bottom < bRect.top ||
+        aRect.top > bRect.bottom ||
+        aRect.right < bRect.left ||
+        aRect.left > bRect.right
+      );
+    }
+  
+    function endGame() {
+      isGameOver = true;
+      clearInterval(enemyInterval);
+      gameOverScreen.style.display = "flex";
+      engineSound.pause();
+      engineSound.currentTime = 0;
+    }
+  
+    function restartGame() {
+      window.location.reload();
+    }
+  
+    function startGame() {
+      if (gameStarted) return;
+      gameStarted = true;
+      createRoadLines();
+      enemyInterval = setInterval(createEnemy, 1500);
+      engineSound.play().catch(err => console.log("Sound play blocked:", err));
+      requestAnimationFrame(gameLoop);
+    }
+  
+    function gameLoop() {
+      if (isGameOver) return;
+  
+      moveRoadLines();
+      moveEnemies();
+  
+      if (keys.ArrowLeft && playerX > 0) {
+        playerX -= 5;
+      }
+      if (keys.ArrowRight && playerX < 350) {
+        playerX += 5;
+      }
+  
+      player.style.left = playerX + "px";
+      scoreEl.textContent = "Score: " + score;
+  
+      requestAnimationFrame(gameLoop);
+    }
+  
+    document.addEventListener("keydown", e => {
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+        keys[e.key] = true;
+        if (!gameStarted) startGame(); // Start only after key press
+      }
+    });
+  
+    document.addEventListener("keyup", e => {
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+        keys[e.key] = false;
+      }
+    });
+  
+    restartBtn.addEventListener("click", restartGame);
+  </script>  
+</body>
+</html>
