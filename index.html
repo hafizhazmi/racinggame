@@ -109,6 +109,17 @@
     .right-button {
       right: 20px;
     }
+
+    #watermark {
+      position: fixed;
+      bottom: 5px;
+      right: 10px;
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 0.9rem;
+      z-index: 1000;
+      user-select: none;
+    }
+
   </style>
 </head>
 <body>
@@ -148,6 +159,8 @@
   <!-- Mobile touch controls -->
   <div class="touch-button left-button" id="leftButton">&#8592;</div>
   <div class="touch-button right-button" id="rightButton">&#8594;</div>
+
+  <div id="watermark">Built by Hafiz Hazmi</div>
 
   <script>
     const gameArea = document.getElementById("gameArea");
